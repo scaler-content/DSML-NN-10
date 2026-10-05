@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neural Networks 10 post read</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+:root{
+  --bg:#F4EDDD;
+  --bg-deep:#EBE0C6;
+  --card:#FBF6E9;
+  --card-line:#DDCCA0;
+  --ink:#2B2316;
+  --ink-soft:#5B4E38;
+  --ink-faint:#8A7B5E;
+  --gold:#C8961E;
+  --gold-bright:#E0A822;
+  --gold-deep:#8F6A10;
+  --gold-pale:#F3DFA3;
+  --gold-wash:#FBEFCB;
+  --green:#5B7A4F;
+  --green-pale:#E6EEDD;
+  --radius:4px;
+  --maxw:720px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:'Fraunces',Georgia,serif;
+  color:var(--ink);
+  font-weight:600;
+  line-height:1.2;
+  letter-spacing:-0.01em;
+}
+a{color:var(--gold-deep);}
+p{margin:0 0 1.1em 0;}
+strong{color:var(--ink);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:0.88em;background:var(--gold-wash);padding:0.1em 0.4em;border-radius:3px;}
+pre code{background:none;padding:0;}
+
+/* ---------- progress bar ---------- */
+.progress-bar{position:fixed;top:0;left:0;width:100%;height:3px;background:transparent;z-index:200;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));transition:width 0.1s linear;}
+
+/* ---------- nav toggle (mobile) ---------- */
+.nav-toggle{
+  display:none;position:fixed;top:14px;right:14px;z-index:210;
+  width:42px;height:42px;border-radius:50%;border:1px solid var(--card-line);
+  background:var(--card);color:var(--ink);font-size:18px;cursor:pointer;
+  box-shadow:0 2px 10px rgba(43,35,22,0.12);
+}
+
+/* ---------- TOC sidebar ---------- */
+.toc{
+  position:fixed;top:0;left:0;height:100vh;width:260px;
+  background:var(--bg-deep);border-right:1px solid var(--card-line);
+  padding:28px 22px;overflow-y:auto;z-index:150;
+}
+.toc .toc-label{
+  font-size:11px;letter-spacing:0.08em;color:var(--ink-faint);
+  margin-bottom:16px;font-weight:600;text-transform:uppercase;
+}
+.toc-brand{font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;margin-bottom:28px;color:var(--ink);}
+.toc-brand span{color:var(--gold-deep);}
+.toc ol{list-style:none;margin:0;padding:0;counter-reset:toc;}
+.toc li{counter-increment:toc;margin-bottom:3px;}
+.toc a{
+  display:block;font-size:13.5px;color:var(--ink-soft);text-decoration:none;
+  padding:7px 10px 7px 30px;border-radius:var(--radius);position:relative;
+  transition:background 0.15s,color 0.15s;
+}
+.toc a::before{
+  content:counter(toc,decimal-leading-zero);
+  position:absolute;left:0;top:7px;width:24px;text-align:right;
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);
+}
+.toc a:hover{background:var(--gold-wash);color:var(--ink);}
+.toc a.active{background:var(--gold-pale);color:var(--gold-deep);font-weight:600;}
+
+/* ---------- layout ---------- */
+main{margin-left:260px;}
+.hero{
+  padding:92px 48px 64px;background:
+    radial-gradient(900px 420px at 85% -10%, rgba(224,168,34,0.18), transparent 60%),
+    var(--bg);
+  border-bottom:1px solid var(--card-line);
+}
+.hero-inner{max-width:var(--maxw);margin:0 auto;}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--gold-deep);
+  margin-bottom:18px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--gold-deep);}
+.hero h1{font-size:2.6rem;margin:0 0 18px;max-width:11ch;}
+.hero .deck{font-size:1.15rem;color:var(--ink-soft);max-width:54ch;margin:0;}
+.hero-meta{display:flex;gap:22px;margin-top:30px;font-size:13px;color:var(--ink-faint);flex-wrap:wrap;}
+.hero-meta b{color:var(--ink-soft);}
+
+article{max-width:var(--maxw);margin:0 auto;padding:10px 48px 40px;}
+section{padding:54px 0;border-bottom:1px solid var(--card-line);}
+section:last-of-type{border-bottom:none;}
+section h2{font-size:1.65rem;margin:0 0 20px;}
+section h3{font-size:1.2rem;margin:28px 0 12px;color:var(--ink);}
+.section-kicker{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-faint);
+  letter-spacing:0.06em;margin-bottom:10px;
+}
+
+/* ---------- case study box ---------- */
+.case-study{
+  background:var(--card);border:1px solid var(--card-line);border-left:4px solid var(--gold-bright);
+  border-radius:var(--radius);padding:26px 28px;margin:22px 0;
+}
+.case-study h3{margin-top:0;font-size:1.05rem;}
+.case-study ul{margin:12px 0 0;padding-left:20px;}
+.case-study li{margin-bottom:8px;}
+
+/* ---------- definition / question callouts ---------- */
+.callout{
+  margin:24px 0;padding:18px 22px;border-radius:var(--radius);
+  background:var(--gold-wash);border:1px solid var(--gold-pale);
+}
+.callout.question{border-left:3px solid var(--gold-deep);}
+.callout .callout-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.05em;
+  color:var(--gold-deep);margin-bottom:6px;font-weight:600;
+}
+.callout p:last-child{margin-bottom:0;}
+
+.note{
+  margin:22px 0;padding:16px 20px;border-radius:var(--radius);
+  background:var(--green-pale);border-left:3px solid var(--green);font-size:0.96rem;
+}
+
+/* ---------- key term chips ---------- */
+.term{color:var(--gold-deep);font-weight:600;}
+
+/* ---------- diagram box ---------- */
+.diagram{
+  margin:28px 0;padding:30px 20px;background:var(--card);
+  border:1px solid var(--card-line);border-radius:6px;
+}
+.diagram-caption{text-align:center;font-size:12.5px;color:var(--ink-faint);margin-top:14px;font-family:'JetBrains Mono',monospace;}
+.flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;}
+.flow-node{
+  background:var(--bg);border:1.5px solid var(--card-line);border-radius:6px;
+  padding:14px 16px;text-align:center;min-width:92px;cursor:default;
+  transition:border-color 0.15s, transform 0.15s;
+}
+.flow-node:hover{border-color:var(--gold-bright);transform:translateY(-2px);}
+.flow-node.bottleneck{background:var(--gold-pale);border-color:var(--gold-deep);min-width:76px;padding:14px 12px;}
+.flow-node .tag{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em;}
+.flow-node .label{font-weight:600;font-size:14px;}
+.flow-arrow{width:34px;height:2px;background:var(--card-line);position:relative;flex:0 0 34px;}
+.flow-arrow::after{content:"";position:absolute;right:-1px;top:-3px;border:4px solid transparent;border-left-color:var(--card-line);}
+.flow-tip{display:none;position:absolute;background:var(--ink);color:var(--bg);font-size:12px;padding:8px 10px;border-radius:4px;max-width:220px;z-index:5;line-height:1.4;}
+.flow-node{position:relative;}
+.flow-node:hover .flow-tip{display:block;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);}
+
+/* ---------- cards grid ---------- */
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0;}
+.app-card{
+  background:var(--card);border:1px solid var(--card-line);border-radius:6px;padding:20px;
+}
+.app-card .num{font-family:'Fraunces',serif;font-size:1.6rem;color:var(--gold-bright);font-weight:600;display:block;margin-bottom:6px;}
+.app-card h4{margin:0 0 8px;font-size:1rem;font-family:'Inter';font-weight:700;}
+.app-card p{font-size:0.92rem;color:var(--ink-soft);margin:0;}
+
+/* ---------- comparison table ---------- */
+.table-wrap{overflow-x:auto;margin:22px 0;}
+table{width:100%;border-collapse:collapse;font-size:0.94rem;background:var(--card);border-radius:6px;overflow:hidden;}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--card-line);}
+th{background:var(--gold-deep);color:var(--bg);font-weight:600;font-size:0.85rem;letter-spacing:0.01em;}
+tr:last-child td{border-bottom:none;}
+td:first-child{color:var(--ink-soft);}
+
+/* ---------- boxed math statements ---------- */
+.boxed-pair{display:flex;gap:16px;margin:24px 0;flex-wrap:wrap;}
+.boxed{
+  flex:1;min-width:220px;background:var(--card);border:1.5px dashed var(--gold-deep);
+  border-radius:6px;padding:18px;text-align:center;font-size:0.95rem;
+}
+
+/* ---------- tabs ---------- */
+.tabs{margin:24px 0;}
+.tab-bar{display:flex;gap:4px;border-bottom:1px solid var(--card-line);margin-bottom:22px;}
+.tab-btn{
+  background:none;border:none;padding:10px 18px;font-family:'Inter';font-size:14.5px;font-weight:600;
+  color:var(--ink-faint);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tab-btn.active{color:var(--gold-deep);border-bottom-color:var(--gold-bright);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadein 0.2s ease;}
+@keyframes fadein{from{opacity:0;}to{opacity:1;}}
+
+/* ---------- accordion (code walkthroughs) ---------- */
+.accordion{margin:22px 0;border:1px solid var(--card-line);border-radius:6px;overflow:hidden;background:var(--card);}
+.acc-item + .acc-item{border-top:1px solid var(--card-line);}
+.acc-head{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:none;border:none;padding:16px 20px;cursor:pointer;text-align:left;
+  font-family:'Inter';font-size:15px;font-weight:600;color:var(--ink);
+}
+.acc-head .chevron{transition:transform 0.2s;color:var(--gold-deep);font-size:13px;}
+.acc-item.open .chevron{transform:rotate(90deg);}
+.acc-head small{display:block;font-weight:400;font-size:12.5px;color:var(--ink-faint);margin-top:3px;}
+.acc-body{max-height:0;overflow:hidden;transition:max-height 0.25s ease;}
+.acc-item.open .acc-body{max-height:none;}
+.acc-body-inner{padding:0 20px 20px;}
+
+pre{
+  background:#FAF3DE;border:1px solid var(--card-line);border-radius:6px;
+  padding:16px 18px;overflow-x:auto;font-size:13px;line-height:1.55;margin:14px 0;
+}
+.output-block{
+  background:var(--ink);color:#EDE3C8;border-radius:6px;padding:14px 18px;
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;margin:10px 0 0;overflow-x:auto;white-space:pre;
+}
+.output-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 2px;}
+
+/* ---------- playground ---------- */
+.playground{background:var(--card);border:1px solid var(--card-line);border-radius:8px;padding:26px 24px;margin:24px 0;}
+.pg-canvases{display:flex;gap:28px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin-bottom:22px;}
+.pg-col{text-align:center;}
+.pg-col canvas{background:#10131c;border-radius:6px;border:1px solid var(--card-line);}
+.pg-col .pg-caption{font-size:12px;color:var(--ink-faint);margin-top:8px;font-family:'JetBrains Mono',monospace;}
+.pg-controls{max-width:420px;margin:0 auto;}
+.pg-controls label{display:flex;justify-content:space-between;font-size:13.5px;color:var(--ink-soft);margin-bottom:8px;font-weight:600;}
+.pg-controls input[type=range]{width:100%;accent-color:var(--gold-deep);}
+.pg-readout{font-family:'JetBrains Mono',monospace;color:var(--gold-deep);}
+.pg-note{font-size:12.5px;color:var(--ink-faint);margin-top:14px;text-align:center;}
+
+/* ---------- noise toggle demo ---------- */
+.noise-demo{display:flex;gap:28px;justify-content:center;align-items:center;flex-wrap:wrap;margin:22px 0 10px;}
+.noise-demo .pg-col canvas{background:#10131c;}
+.noise-toggle{
+  display:flex;align-items:center;gap:10px;justify-content:center;margin-top:8px;
+}
+.noise-toggle button{
+  background:var(--ink);color:var(--bg);border:none;padding:10px 18px;border-radius:5px;
+  font-family:'Inter';font-weight:600;font-size:13.5px;cursor:pointer;
+}
+.noise-toggle button:hover{background:var(--gold-deep);}
+
+/* ---------- quiz ---------- */
+.quiz{background:var(--card);border:1px solid var(--card-line);border-radius:8px;padding:26px 26px 22px;margin:8px 0;}
+.quiz-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold-deep);letter-spacing:0.05em;margin-bottom:10px;font-weight:600;}
+.quiz-q{font-weight:600;font-size:1.02rem;margin-bottom:18px;}
+.quiz-options{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.quiz-opt{
+  display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--card-line);
+  border-radius:6px;cursor:pointer;background:var(--bg);transition:border-color 0.15s,background 0.15s;
+  font-size:14.5px;
+}
+.quiz-opt:hover{border-color:var(--gold-bright);}
+.quiz-opt input{margin-top:3px;accent-color:var(--gold-deep);}
+.quiz-opt.correct{border-color:var(--green);background:var(--green-pale);}
+.quiz-opt.incorrect{border-color:#B5593F;background:#F6E3DC;}
+.quiz-submit{
+  background:var(--gold-deep);color:var(--bg);border:none;padding:10px 22px;border-radius:5px;
+  font-weight:600;font-size:14px;cursor:pointer;font-family:'Inter';
+}
+.quiz-submit:hover{background:var(--ink);}
+.quiz-submit:disabled{opacity:0.4;cursor:not-allowed;}
+.quiz-feedback{display:none;margin-top:18px;padding:16px 18px;border-radius:6px;font-size:14px;}
+.quiz-feedback.show{display:block;animation:fadein 0.25s ease;}
+.quiz-feedback.right{background:var(--green-pale);border-left:3px solid var(--green);}
+.quiz-feedback.wrong{background:#F6E3DC;border-left:3px solid #B5593F;}
+.quiz-feedback b{display:block;margin-bottom:6px;}
+
+/* ---------- wrap up ---------- */
+.wrap-list{list-style:none;margin:0;padding:0;}
+.wrap-list li{
+  display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--card-line);
+}
+.wrap-list li:last-child{border-bottom:none;}
+.wrap-list .dot{
+  flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:var(--gold-bright);margin-top:8px;
+}
+
+/* ---------- timeline (everyday AI) ---------- */
+.flow-list{display:flex;flex-direction:column;gap:0;margin:24px 0;}
+.flow-list-item{display:flex;gap:18px;padding:18px 0;border-left:2px solid var(--card-line);padding-left:22px;position:relative;margin-left:8px;}
+.flow-list-item::before{content:"";position:absolute;left:-6px;top:22px;width:10px;height:10px;border-radius:50%;background:var(--gold-bright);border:2px solid var(--card);}
+.flow-list-item h4{margin:0 0 6px;font-size:0.98rem;}
+.flow-list-item p{margin:0;font-size:0.93rem;color:var(--ink-soft);}
+
+footer{
+  text-align:center;padding:40px 48px 60px;color:var(--ink-faint);font-size:13px;
+  font-family:'JetBrains Mono',monospace;max-width:var(--maxw);margin:0 auto;
+}
+footer .gold-rule{width:40px;height:2px;background:var(--gold-bright);margin:0 auto 18px;}
+
+/* ---------- responsive ---------- */
+@media(max-width:980px){
+  .card-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:860px){
+  .toc{transform:translateX(-100%);transition:transform 0.25s ease;box-shadow:0 0 40px rgba(0,0,0,0.25);}
+  .toc.open{transform:translateX(0);}
+  main{margin-left:0;}
+  .nav-toggle{display:block;}
+  .hero{padding:84px 24px 48px;}
+  article{padding:10px 24px 30px;}
+  .hero h1{font-size:2rem;max-width:none;}
+  .card-grid{grid-template-columns:1fr;}
+  .boxed-pair{flex-direction:column;}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important;}
+  html{scroll-behavior:auto;}
+}
+:focus-visible{outline:2px solid var(--gold-deep);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<button class="nav-toggle" id="navToggle" aria-label="Toggle table of contents" aria-expanded="false">☰</button>
+
+<nav class="toc" id="toc" aria-label="Table of contents">
+  <div class="toc-brand">Neural Networks 10<span> · post read</span></div>
+  <div class="toc-label">On this page</div>
+  <ol>
+    <li><a href="#intro">The Nightwatch problem</a></li>
+    <li><a href="#intuition">Building the intuition</a></li>
+    <li><a href="#applications">Applications at a glance</a></li>
+    <li><a href="#dimred">Autoencoders vs. PCA</a></li>
+    <li><a href="#playground">Playground: bottleneck size</a></li>
+    <li><a href="#code-ae">Building a real autoencoder</a></li>
+    <li><a href="#feature-transfer">Feature extraction &amp; transfer learning</a></li>
+    <li><a href="#denoising">Denoising autoencoders</a></li>
+    <li><a href="#recommenders">Autoencoder recommenders</a></li>
+    <li><a href="#everyday-ai">Where this shows up today</a></li>
+    <li><a href="#wrapup">Wrap-up</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">NEURAL NETWORKS 10</div>
+    <h1>Autoencoders: Compressing Data Without Losing What Matters</h1>
+    <p class="deck">How a network that only learns to copy its own input ends up producing the compressed, meaning-dense vectors behind compression, denoising, recommendation, and modern search.</p>
+    <div class="hero-meta">
+      <span><b>Read time</b> ~22 min</span>
+      <span><b>Core idea</b> Encoder → bottleneck → decoder</span>
+      <span><b>Prerequisites</b> Basic neural networks</span>
+    </div>
+  </div>
+</header>
+
+<article>
+
+<!-- ================= INTRO ================= -->
+<section id="intro">
+  <div class="section-kicker">THE SETUP</div>
+  <h2>A running example: Nightwatch</h2>
+  <p>Nightwatch is a citizen-science platform. Amateur astronomers point ordinary cameras and small telescopes at the sky and upload their photographs, and the Nightwatch team helps them catalogue what they have captured.</p>
+  <p>Maya is a data scientist on the Nightwatch team. Three problems have landed on her desk this week:</p>
+  <div class="case-study">
+    <h3>Maya's three problems</h3>
+    <ul>
+      <li><strong>Storage.</strong> The photo library has grown far faster than the storage budget, and every image is taking up more space than it needs to.</li>
+      <li><strong>Noise.</strong> A large fraction of the uploads are noisy: streetlights, sensor grain, and compression artifacts make the actual sky content hard to see.</li>
+      <li><strong>Discovery.</strong> Users keep asking for a way to find "photos like this one" so they can discover other captures of the same region of sky.</li>
+    </ul>
+  </div>
+  <p>Maya suspects a single family of neural networks can help with all three. We'll work through her reasoning, starting from the simplest possible version of the idea.</p>
+</section>
+
+<!-- ================= INTUITION ================= -->
+<section id="intuition">
+  <div class="section-kicker">THE CORE IDEA</div>
+  <h2>Building the intuition</h2>
+  <p>Suppose Maya builds a small network where the input layer and the output layer have exactly the same number of neurons. She feeds in one image at a time, represented as a vector, and asks the network to produce that same vector back out.</p>
+  <p>A bit of notation we'll reuse throughout:</p>
+  <ul>
+    <li>\(x_i\) is the input vector for the \(i\)-th image (its pixel values, flattened into a list of numbers).</li>
+    <li>\(\hat{x}_i\) is the network's output for that same image — its attempt at reconstructing \(x_i\).</li>
+  </ul>
+
+  <div class="callout question">
+    <div class="callout-label">Question</div>
+    <p>Can we build a network where \(x_i\) and \(\hat{x}_i\) end up identical?</p>
+  </div>
+  <p>If every activation in the network is linear, yes, trivially: whatever goes in comes back out unchanged — so this version teaches us nothing useful. The interesting version happens once we add a nonlinearity and, more importantly, once we force the information to pass through a layer <em>narrower</em> than the input.</p>
+
+  <div class="diagram">
+    <div class="flow" id="aeFlow">
+      <div class="flow-node"><span class="tag">input</span><span class="label">x<sub>i</sub></span><div class="flow-tip">The raw image, flattened into a vector of pixel values — dimension d.</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node"><span class="tag">encoder</span><span class="label">f( )</span><div class="flow-tip">A stack of layers that narrows the representation down, step by step.</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node bottleneck"><span class="tag">bottleneck</span><span class="label">z<sub>i</sub></span><div class="flow-tip">The latent representation / embedding — dimension k, with k ≪ d.</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node"><span class="tag">decoder</span><span class="label">g( )</span><div class="flow-tip">A stack of layers that widens the bottleneck back out to the original size.</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node"><span class="tag">output</span><span class="label">x̂<sub>i</sub></span><div class="flow-tip">The reconstruction — the network's best attempt at rebuilding x_i.</div></div>
+    </div>
+    <div class="diagram-caption">hover a block &nbsp;·&nbsp; x_i → [ Encoder f ] → z_i (bottleneck, dim k) → [ Decoder g ] → x̂_i</div>
+  </div>
+
+  <p>Now we can't expect \(x_i = \hat{x}_i\) exactly, only \(x_i \approx \hat{x}_i\). How close the two are depends on how we measure the gap, which depends on what kind of values we're reconstructing:</p>
+  <ul>
+    <li>If each value in \(x_i\) is binary (0 or 1), use <span class="term">binary cross-entropy</span>.</li>
+    <li>If reconstructing a one-hot category across several classes, use <span class="term">categorical cross-entropy</span>.</li>
+    <li>If the values are continuous, such as raw pixel brightness, use <span class="term">mean squared error (MSE)</span> or its square root, <span class="term">RMSE</span>.</li>
+  </ul>
+  <p>For continuous data, the reconstruction loss for one image is:</p>
+  <p>\[ L(x_i, \hat{x}_i) = \sum_{j=1}^{d} (x_{ij} - \hat{x}_{ij})^2 \]</p>
+  <p>where \(d\) is the number of features in one image, \(x_{ij}\) is the value of the \(j\)-th feature of image \(i\), and \(\hat{x}_{ij}\) is the network's reconstruction of that feature. Training simply looks for the weights that make this loss as small as possible, averaged across every image in the training set.</p>
+
+  <h3>Where the real value is hiding</h3>
+  <p>Say the network narrows from \(d\) dimensions down to a middle layer of only \(k\) dimensions, where \(k \ll d\), then widens back out to \(d\) on the way to the output.</p>
+  <p>If the network can still produce an output close to the original \(d\)-dimensional input, that tells us something important: <strong>all of the information needed to rebuild the image was preserved in that narrow middle layer.</strong> Nothing essential was thrown away between the input and that layer — only reshaped.</p>
+  <p>That narrow middle layer is called the <span class="term">bottleneck</span>, and the vector of numbers sitting there for a given input is its <span class="term">latent representation</span>, or <span class="term">embedding</span>:</p>
+  <ul>
+    <li>\(z_i = f(x_i)\), where \(f\) is the first half of the network (the <strong>encoder</strong>) and \(z_i \in \mathbb{R}^k\) is the embedding of image \(i\).</li>
+    <li>\(\hat{x}_i = g(z_i)\), where \(g\) is the second half (the <strong>decoder</strong>), turning the embedding back into a full-sized reconstruction.</li>
+  </ul>
+  <p>This whole structure — encoder plus bottleneck plus decoder, trained to reconstruct its own input — is what we call an <strong>autoencoder</strong>. Even though it looks like it's just learning to copy its input, the point of training one is almost never the copy itself. The point is \(z_i\): a compressed, information-dense description of \(x_i\) that we can reuse elsewhere.</p>
+</section>
+
+<!-- ================= QUIZ 1 ================= -->
+<section id="quiz1">
+  <div class="quiz" data-quiz>
+    <div class="quiz-tag">CHECK YOUR UNDERSTANDING</div>
+    <div class="quiz-q">Nightwatch stores each photo as continuous brightness values per pixel, not as 0/1 values. Which loss function is the natural first choice for training an autoencoder on this data?</div>
+    <div class="quiz-options">
+      <label class="quiz-opt"><input type="radio" name="q1"><span>Categorical cross-entropy, because images belong to categories such as "nebula" or "star cluster"</span></label>
+      <label class="quiz-opt"><input type="radio" name="q1"><span>Binary cross-entropy, because pixels represent brightness values as either dark or bright</span></label>
+      <label class="quiz-opt" data-correct><input type="radio" name="q1"><span>Mean squared error, because pixel brightness is continuous and we want to penalize reconstruction error</span></label>
+      <label class="quiz-opt"><input type="radio" name="q1"><span>Accuracy, because we want to measure the fraction of pixels reconstructed perfectly</span></label>
+    </div>
+    <button class="quiz-submit" data-submit>Check answer</button>
+    <div class="quiz-feedback" data-feedback>
+      <b data-verdict></b>
+      <span>Pixel brightness in a photograph is continuous, not binary or categorical, so MSE (or RMSE) is the natural match. Binary cross-entropy is reserved for genuinely binary targets, categorical cross-entropy for one-hot class targets, and accuracy is a classification metric, not a reconstruction loss.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= APPLICATIONS ================= -->
+<section id="applications">
+  <div class="section-kicker">WHY BOTHER</div>
+  <h2>Applications of autoencoders</h2>
+  <p>Now that we know what an autoencoder produces — a compressed embedding at the bottleneck — we can list the broad families of problems that embedding is useful for:</p>
+  <div class="card-grid">
+    <div class="app-card">
+      <span class="num">01</span>
+      <h4>Compression</h4>
+      <p>Fewer numbers to store or transmit per item, which means faster downstream computation and lower latency.</p>
+    </div>
+    <div class="app-card">
+      <span class="num">02</span>
+      <h4>Denoising</h4>
+      <p>Training the network to map a corrupted version of the input back to the clean version.</p>
+    </div>
+    <div class="app-card">
+      <span class="num">03</span>
+      <h4>Embeddings</h4>
+      <p>The bottleneck vector can be reused for recommendation, clustering, similarity search, and as input features for other models.</p>
+    </div>
+  </div>
+  <p>This maps directly onto Maya's three problems: compression addresses the storage budget, denoising addresses the noisy uploads, and embeddings address the "find photos like this one" request.</p>
+</section>
+
+<!-- ================= DIM RED ================= -->
+<section id="dimred">
+  <div class="section-kicker">COMPARISON</div>
+  <h2>Dimensionality reduction, in depth</h2>
+  <div class="callout question">
+    <div class="callout-label">Question</div>
+    <p>Could we design a network that behaves like PCA?</p>
+  </div>
+  <p>Say we have data in \(d\) dimensions and want a representation in \(d'\) dimensions, where \(d' < d\). This is exactly the encoder half of an autoencoder: \(d\)-dimensional input in, \(d'\)-dimensional embedding out.</p>
+  <p>Here we don't actually need the decoder's output for the final task — we only need the embedding. The fact that a decoder <em>can</em> rebuild the original input from that embedding is what proves the embedding was information-rich enough to be trustworthy.</p>
+
+  <div class="callout question">
+    <div class="callout-label">Question</div>
+    <p>Must the encoder and decoder be mirror images of each other?</p>
+  </div>
+  <p>Not anymore. Early autoencoder designs often kept the encoder and decoder symmetric (same number of layers, same neuron counts in reverse) and sometimes even shared weights between them — a trick called <span class="term">weight tying</span> — mainly to cut down the number of parameters to train. Today, with enough data and compute, there's no requirement for symmetry: the encoder and decoder can have entirely independent architectures.</p>
+
+  <div class="quiz" data-quiz>
+    <div class="quiz-tag">CHECK YOUR UNDERSTANDING</div>
+    <div class="quiz-q">Which statement about encoder and decoder design is correct?</div>
+    <div class="quiz-options">
+      <label class="quiz-opt"><input type="radio" name="q2"><span>The encoder and decoder must always have the same number of layers and neurons, or training will fail</span></label>
+      <label class="quiz-opt" data-correct><input type="radio" name="q2"><span>Symmetry and weight tying were common early choices, mainly to reduce parameter count, but neither is required today</span></label>
+      <label class="quiz-opt"><input type="radio" name="q2"><span>Weight tying between encoder and decoder is required for every autoencoder model to train</span></label>
+      <label class="quiz-opt"><input type="radio" name="q2"><span>The decoder must always be larger than the encoder, regardless of the task or architecture used</span></label>
+    </div>
+    <button class="quiz-submit" data-submit>Check answer</button>
+    <div class="quiz-feedback" data-feedback>
+      <b data-verdict></b>
+      <span>Symmetric, weight-tied designs were a historical convenience for keeping parameter counts down. Modern autoencoders are free to use independent, asymmetric encoder and decoder architectures, since the constraint was never mathematical, only practical.</span>
+    </div>
+  </div>
+
+  <h3>Why use an autoencoder instead of PCA?</h3>
+  <p>At first glance, PCA and an autoencoder seem to do the same thing: PCA compresses data from a higher dimension to a lower one, while an autoencoder's encoder compresses data into a lower-dimensional representation and the decoder reconstructs it. The key difference is <strong>what kind of patterns they can learn</strong>.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>PCA</th><th>Autoencoder</th></tr></thead>
+      <tbody>
+        <tr><td>Learns linear transformations</td><td>Can learn non-linear transformations</td></tr>
+        <tr><td>Finds directions of maximum variance</td><td>Learns representations optimized for reconstruction</td></tr>
+        <tr><td>Uses a fixed mathematical procedure</td><td>Learns representations using a neural network</td></tr>
+        <tr><td>Works well when data has mostly linear structure</td><td>Can capture complex, non-linear structure</td></tr>
+        <tr><td>Usually simpler and faster</td><td>More flexible, but more computationally expensive</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>PCA essentially asks: <em>"What linear combination of the original features captures the most variance?"</em> An autoencoder can ask something more flexible: <em>"What representation allows me to reconstruct the original data as accurately as possible, even when the underlying structure is non-linear?"</em></p>
+  <p>For simple, approximately linear data, PCA can be sufficient. But for complex data such as images, text, or other highly non-linear data, an autoencoder can learn richer representations.</p>
+  <div class="boxed-pair">
+    <div class="boxed">PCA → Linear dimensionality reduction</div>
+    <div class="boxed">Autoencoder → Potentially non-linear dimensionality reduction</div>
+  </div>
+</section>
+
+<!-- ================= PLAYGROUND ================= -->
+<section id="playground">
+  <div class="section-kicker">INTERACTIVE</div>
+  <h2>Playground: bottleneck size vs. reconstruction quality</h2>
+  <p>The core trade-off of a bottleneck is simple to state but worth seeing: the smaller the bottleneck, the less room there is to preserve detail, so reconstruction quality degrades. The slider below illustrates this relationship on a synthetic starfield image — drag it to change <strong>k</strong>, the bottleneck size, and watch the "reconstruction" sharpen as more capacity becomes available.</p>
+  <div class="playground">
+    <div class="pg-canvases">
+      <div class="pg-col"><canvas id="pgOriginal" width="180" height="180"></canvas><div class="pg-caption">original (d = 64)</div></div>
+      <div class="pg-col"><canvas id="pgRecon" width="180" height="180"></canvas><div class="pg-caption">reconstructed (k = <span id="kLabel">8</span>)</div></div>
+    </div>
+    <div class="pg-controls">
+      <label>Bottleneck size k <span class="pg-readout" id="kReadout">8</span></label>
+      <input type="range" min="1" max="64" value="8" id="kSlider" aria-label="Bottleneck dimension k">
+    </div>
+    <div class="pg-note">Illustrative simulation of the effect — in the original class demo, PCA itself stood in as the encoder–decoder pair, projecting a digit image down to k components and back.</div>
+  </div>
+</section>
+
+<!-- ================= CODE: BUILDING AE ================= -->
+<section id="code-ae">
+  <div class="section-kicker">WALKTHROUGH</div>
+  <h2>Building a real autoencoder</h2>
+  <p>Moving from the PCA stand-in to the actual neural version: encoder and decoder as trainable layers, compressing each 64-dimensional digit scan down to an 8-dimensional bottleneck.</p>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <button class="acc-head"><span>Define and train the autoencoder<br><small>PyTorch · encoder/decoder as nn.Sequential stacks</small></span><span class="chevron">▸</span></button>
+      <div class="acc-body"><div class="acc-body-inner">
+<pre><code class="language-python">import torch
+import torch.nn as nn
+import torch.optim as optim
+from sklearn.datasets import load_digits
+
+digits = load_digits()
+X = digits.data.astype("float32") / 16.0   # pixel values range 0-16, scale to 0-1
+X_train, X_test = X[:1500], X[1500:]
+
+input_dim = X.shape[1]      # 64, the flattened 8x8 image
+bottleneck_dim = 8          # the compressed representation size
+
+class Autoencoder(nn.Module):
+    def __init__(self, input_dim, bottleneck_dim):
+        super().__init__()
+        self.encoder = nn.Sequential(
+            nn.Linear(input_dim, 32), nn.ReLU(),
+            nn.Linear(32, bottleneck_dim), nn.ReLU()
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(bottleneck_dim, 32), nn.ReLU(),
+            nn.Linear(32, input_dim), nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        encoded = self.encoder(x)
+        decoded = self.decoder(encoded)
+        return decoded
+
+autoencoder = Autoencoder(input_dim, bottleneck_dim)
+criterion = nn.MSELoss()
+optimizer = optim.Adam(autoencoder.parameters())
+
+X_train_tensor = torch.tensor(X_train, dtype=torch.float32)
+X_test_tensor = torch.tensor(X_test, dtype=torch.float32)
+
+epochs, batch_size = 40, 32
+for epoch in range(epochs):
+    autoencoder.train()
+    indices = torch.randperm(X_train_tensor.size(0))
+    for start in range(0, X_train_tensor.size(0), batch_size):
+        batch_indices = indices[start:start + batch_size]
+        X_batch = X_train_tensor[batch_indices]
+        optimizer.zero_grad()
+        reconstructed = autoencoder(X_batch)
+        loss = criterion(reconstructed, X_batch)
+        loss.backward()
+        optimizer.step()
+
+autoencoder.eval()
+with torch.no_grad():
+    reconstructed = autoencoder(X_test_tensor)
+    validation_loss = criterion(reconstructed, X_test_tensor)
+print("Final validation loss:", validation_loss.item())</code></pre>
+<div class="output-label">output</div>
+<div class="output-block">Final validation loss: 0.02601335570216179</div>
+      </div></div>
+    </div>
+    <div class="acc-item">
+      <button class="acc-head"><span>Pull out the embeddings<br><small>The encoder alone gives the vector we actually care about</small></span><span class="chevron">▸</span></button>
+      <div class="acc-body"><div class="acc-body-inner">
+<pre><code class="language-python">autoencoder.eval()
+with torch.no_grad():
+    embeddings = autoencoder.encoder(X_test_tensor)
+
+print("Original dimension:", X_test.shape[1])
+print("Embedding dimension:", embeddings.shape[1])</code></pre>
+<div class="output-label">output</div>
+<div class="output-block">Original dimension: 64
+Embedding dimension: 8</div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURE EXTRACTION / TRANSFER LEARNING ================= -->
+<section id="feature-transfer">
+  <div class="section-kicker">REUSING THE EMBEDDING</div>
+  <h2>Feature extraction &amp; transfer learning</h2>
+  <p>Once we have embeddings, we're free to leave the autoencoder behind and use those embeddings as input features to any other model.</p>
+
+  <div class="tabs" data-tabs>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="fe">Feature extraction</button>
+      <button class="tab-btn" data-tab="tl">Transfer learning</button>
+    </div>
+
+    <div class="tab-panel active" data-panel="fe">
+      <div class="callout question">
+        <div class="callout-label">Question</div>
+        <p>Could Maya feed raw pixel values straight into a decision tree or logistic regression to classify what kind of object is in an image?</p>
+      </div>
+      <p>Not well. Models like decision trees and plain logistic regression don't handle raw, high-dimensional pixel data gracefully — they have no built-in notion of spatial structure. What works much better is to first pass the image through a trained encoder to get its embedding, then hand that compact, information-dense vector to the simpler downstream model.</p>
+      <p>For Nightwatch, this means: train an autoencoder once on a large pool of unlabeled sky photos, then use the resulting embeddings to train a lightweight classifier (KNN, logistic regression, or a small tree-based model) on a much smaller labeled set — for example, photos volunteers have manually tagged as "galaxy," "star cluster," or "meteor trail."</p>
+      <div class="accordion">
+        <div class="acc-item">
+          <button class="acc-head"><span>Classify using embeddings as features<br><small>Logistic regression on top of frozen encoder output</small></span><span class="chevron">▸</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+<pre><code class="language-python">from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import torch
+
+labels = digits.target   # stand-in for Nightwatch's volunteer-tagged labels
+
+autoencoder.eval()
+with torch.no_grad():
+    embeddings = autoencoder.encoder(torch.tensor(X, dtype=torch.float32)).numpy()
+
+emb_train, emb_test, y_train, y_test = train_test_split(
+    embeddings, labels, test_size=0.3, random_state=42
+)
+
+clf = LogisticRegression(max_iter=1000)
+clf.fit(emb_train, y_train)
+preds = clf.predict(emb_test)
+
+print("Accuracy using embeddings as features:", accuracy_score(y_test, preds))</code></pre>
+<div class="output-label">output</div>
+<div class="output-block">Accuracy using embeddings as features: 0.8925925925925926</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-panel="tl">
+      <p>Now imagine a much larger, more expensive network: one trained for weeks on powerful hardware by a research team, originally built to classify medical scans as cancerous or not.</p>
+      <div class="callout question">
+        <div class="callout-label">Question</div>
+        <p>What are Maya's options if she wants to detect a completely different pattern — say, a rare comet trail — in her sky photos?</p>
+      </div>
+      <p><strong>Option 1 — train from scratch.</strong> Possible, but unlikely to match the quality of a model that took a well-resourced team weeks of compute to tune.</p>
+      <p><strong>Option 2 — reuse the pretrained network's embeddings.</strong> Even though that network was never trained on astronomy photos, its intermediate layers learned general-purpose patterns (edges, textures, shapes). Maya can feed her sky photos into that existing network, take the output of an intermediate layer as an embedding, and train a small new model on top of those embeddings for her comet-trail task.</p>
+      <p>Reusing a network trained for one task as a feature extractor for a different, related task is called <span class="term">transfer learning</span>.</p>
+    </div>
+  </div>
+
+  <div class="quiz" data-quiz>
+    <div class="quiz-tag">CHECK YOUR UNDERSTANDING</div>
+    <div class="quiz-q">A team trains an autoencoder on general product photos for an online store. A different team later reuses that autoencoder's encoder to help classify a completely unrelated set of images: handwriting samples for a separate project. What is this second step an example of?</div>
+    <div class="quiz-options">
+      <label class="quiz-opt" data-correct><input type="radio" name="q3"><span>Transfer learning, because a network trained for one purpose is reused for a different task</span></label>
+      <label class="quiz-opt"><input type="radio" name="q3"><span>Denoising, because the encoder removes unwanted variations from the input images</span></label>
+      <label class="quiz-opt"><input type="radio" name="q3"><span>Dimensionality reduction, because the encoder produces fewer features than the input</span></label>
+      <label class="quiz-opt"><input type="radio" name="q3"><span>Weight tying, because the encoder and decoder share parameters during training</span></label>
+    </div>
+    <button class="quiz-submit" data-submit>Check answer</button>
+    <div class="quiz-feedback" data-feedback>
+      <b data-verdict></b>
+      <span>Reusing a model (or part of one) trained on one task to help with a different task is the definition of transfer learning. The fact that the two tasks (product photos vs. handwriting) are unrelated is exactly what makes this transfer learning rather than simply continuing to train on the original task.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DENOISING ================= -->
+<section id="denoising">
+  <div class="section-kicker">REGULARIZATION BY CORRUPTION</div>
+  <h2>Denoising autoencoders</h2>
+  <p>Sometimes an encoder is built with <em>more</em> neurons than the input, not fewer, so information is being expanded rather than compressed on the way to the middle layer. In that situation — and even sometimes with a genuine bottleneck — an autoencoder can take a shortcut: it learns the <span class="term">identity function</span>, simply copying input to output without learning anything meaningful about the structure of the data.</p>
+
+  <div class="callout question">
+    <div class="callout-label">Question</div>
+    <p>How do we stop the network from taking that shortcut?</p>
+  </div>
+  <p>We deliberately corrupt the input with random noise before it ever reaches the encoder, but we still ask the network to reconstruct the <strong>original, clean</strong> version as its target.</p>
+
+  <div class="noise-demo">
+    <div class="pg-col"><canvas id="denoiseClean" width="150" height="150"></canvas><div class="pg-caption">clean target</div></div>
+    <div class="pg-col"><canvas id="denoiseNoisy" width="150" height="150"></canvas><div class="pg-caption" id="noiseState">corrupted input</div></div>
+  </div>
+  <div class="noise-toggle"><button id="noiseToggle" type="button">Re-roll the noise</button></div>
+
+  <p style="margin-top:22px;">Since the noise has no consistent pattern, the network cannot learn to reproduce it. The only way to get close to the clean target is to learn the actual underlying structure of the data and ignore the noise. This acts as a form of <span class="term">regularization</span>: the corruption forces the network to generalize instead of memorizing.</p>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <button class="acc-head"><span>Corrupt the inputs<br><small>Gaussian noise, clipped back to a valid pixel range</small></span><span class="chevron">▸</span></button>
+      <div class="acc-body"><div class="acc-body-inner">
+<pre><code class="language-python">import numpy as np
+
+X = digits.data.astype("float32") / 16.0
+X_train, X_test = X[:1500], X[1500:]
+
+noise_factor = 0.4
+rng = np.random.default_rng(42)
+
+X_train_noisy = X_train + noise_factor * rng.normal(size=X_train.shape)
+X_test_noisy = X_test + noise_factor * rng.normal(size=X_test.shape)
+
+X_train_noisy = np.clip(X_train_noisy, 0.0, 1.0)
+X_test_noisy = np.clip(X_test_noisy, 0.0, 1.0)</code></pre>
+<div class="output-label">output</div>
+<div class="output-block">Clean training shape: (1500, 64)
+Noisy training shape: (1500, 64)</div>
+      </div></div>
+    </div>
+    <div class="acc-item">
+      <button class="acc-head"><span>Train on noisy input, clean target<br><small>Same architecture — different training signal</small></span><span class="chevron">▸</span></button>
+      <div class="acc-body"><div class="acc-body-inner">
+<pre><code class="language-python">denoiser_input = torch.tensor(X_train_noisy, dtype=torch.float32)
+X_train_tensor = torch.tensor(X_train, dtype=torch.float32)
+X_test_noisy_tensor = torch.tensor(X_test_noisy, dtype=torch.float32)
+X_test_tensor = torch.tensor(X_test, dtype=torch.float32)
+
+class DenoisingAutoencoder(nn.Module):
+    def __init__(self, input_dim, bottleneck_dim):
+        super().__init__()
+        self.encoder = nn.Sequential(
+            nn.Linear(input_dim, 32), nn.ReLU(),
+            nn.Linear(32, bottleneck_dim), nn.ReLU()
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(bottleneck_dim, 32), nn.ReLU(),
+            nn.Linear(32, input_dim), nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        return self.decoder(self.encoder(x))
+
+denoising_autoencoder = DenoisingAutoencoder(input_dim, bottleneck_dim)
+criterion = nn.MSELoss()
+optimizer = optim.Adam(denoising_autoencoder.parameters())
+
+# Note: the target here is the CLEAN data, even though the input is noisy
+epochs, batch_size = 40, 32
+for epoch in range(epochs):
+    denoising_autoencoder.train()
+    indices = torch.randperm(denoiser_input.size(0))
+    for start in range(0, denoiser_input.size(0), batch_size):
+        batch_indices = indices[start:start + batch_size]
+        X_batch_noisy = denoiser_input[batch_indices]
+        X_batch_clean = X_train_tensor[batch_indices]
+        optimizer.zero_grad()
+        denoised_output = denoising_autoencoder(X_batch_noisy)
+        loss = criterion(denoised_output, X_batch_clean)
+        loss.backward()
+        optimizer.step()
+
+denoising_autoencoder.eval()
+with torch.no_grad():
+    denoised_output = denoising_autoencoder(X_test_noisy_tensor)
+    validation_loss = criterion(denoised_output, X_test_tensor)
+print("Final validation loss:", validation_loss.item())</code></pre>
+<div class="output-label">output</div>
+<div class="output-block">Final validation loss: 0.04034293070435524</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="quiz" data-quiz>
+    <div class="quiz-tag">CHECK YOUR UNDERSTANDING</div>
+    <div class="quiz-q">Why does training on noisy inputs with clean targets discourage the network from simply memorizing (the identity function)?</div>
+    <div class="quiz-options">
+      <label class="quiz-opt"><input type="radio" name="q4"><span>Because adding noise makes each training sample smaller and easier to process</span></label>
+      <label class="quiz-opt"><input type="radio" name="q4"><span>Because noisy inputs allow the network to train faster without learning the underlying data structure</span></label>
+      <label class="quiz-opt"><input type="radio" name="q4"><span>Because adding noise increases the number of neurons available to reconstruct each input sample</span></label>
+      <label class="quiz-opt" data-correct><input type="radio" name="q4"><span>Because random noise varies across samples, so the network must learn the underlying data structure to reduce reconstruction error</span></label>
+    </div>
+    <button class="quiz-submit" data-submit>Check answer</button>
+    <div class="quiz-feedback" data-feedback>
+      <b data-verdict></b>
+      <span>The network is scored against the clean target, not the noisy input. Since the specific noise added to each sample is random and non-repeating, there's no pattern in it for the network to exploit, so the only path to a lower loss is genuinely modeling the underlying signal.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RECOMMENDERS ================= -->
+<section id="recommenders">
+  <div class="section-kicker">FROM EMBEDDINGS TO SIMILARITY</div>
+  <h2>Recommender systems using autoencoders</h2>
+  <p>Recall the idea of a user–item interaction matrix: rows represent items, columns represent users, and each cell holds some signal of interaction (a rating, a "starred" flag, a view count). For Nightwatch, an item is a photo, a user is a platform member, and the signal is whether that member starred that photo.</p>
+  <p>This matrix is almost always <strong>sparse</strong>: any one user has only interacted with a tiny fraction of all photos.</p>
+
+  <div class="diagram">
+    <div class="flow">
+      <div class="flow-node"><span class="tag">input</span><span class="label">item row</span><div class="flow-tip">One item's sparse interaction vector across all users.</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node"><span class="tag">encoder</span><span class="label">f( )</span><div class="flow-tip">Compresses the sparse row into a dense summary.</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node bottleneck"><span class="tag">bottleneck</span><span class="label">z</span><div class="flow-tip">The item embedding — "the kinds of users who engage with this item."</div></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node"><span class="tag">compare</span><span class="label">cos·sim</span><div class="flow-tip">Cosine similarity between item embeddings surfaces similar items.</div></div>
+    </div>
+    <div class="diagram-caption">each item's row becomes a dense embedding that captures "who engages with it"</div>
+  </div>
+
+  <p><strong>The idea:</strong> treat each item's row of interactions as an input vector, and train an autoencoder on those rows. The bottleneck embedding for each item captures a dense summary of "the kinds of users who engage with this item," which turns out to be a strong signal of similarity between items.</p>
+  <p>Once every item has an embedding, we can compare any two items with cosine similarity:</p>
+  <p>\[ \text{sim}(z_a, z_b) = \frac{z_a \cdot z_b}{\lVert z_a \rVert \, \lVert z_b \rVert} \]</p>
+  <p>where \(z_a\) and \(z_b\) are the embedding vectors for items \(a\) and \(b\), \(z_a \cdot z_b\) is their dot product, and \(\lVert z_a \rVert\), \(\lVert z_b \rVert\) are their vector lengths. A value close to 1 means the two items tend to attract very similar users; a value close to 0 means they do not.</p>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <button class="acc-head"><span>Build a synthetic interaction matrix<br><small>300 items × 120 users, ~8% filled — realistic sparsity</small></span><span class="chevron">▸</span></button>
+      <div class="acc-body"><div class="acc-body-inner">
+<pre><code class="language-python">import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(7)
+n_items, n_users = 300, 120
+
+interaction = rng.random((n_items, n_users))
+mask = rng.random((n_items, n_users)) < 0.08   # ~8% of entries filled, like real sparse data
+interaction_matrix = np.where(mask, np.round(interaction * 5), 0).astype("float32")
+
+sparsity = (interaction_matrix > 0).sum() / interaction_matrix.size
+print("Matrix shape (items x users):", interaction_matrix.shape)
+print(f"Fraction of filled entries: {sparsity:.2%}")</code></pre>
+<div class="output-label">output</div>
+<div class="output-block">Matrix shape (items x users): (300, 120)
+Fraction of filled entries: 7.16%</div>
+      </div></div>
+    </div>
+    <div class="acc-item">
+      <button class="acc-head"><span>Train the item autoencoder<br><small>Encoder: 120 → 64 → 16 · decoder: 16 → 120</small></span><span class="chevron">▸</span></button>
+      <div class="acc-body"><div class="acc-body-inner">
+<pre><code class="language-python">item_input = torch.tensor(interaction_matrix, dtype=torch.float32)
+
+class ItemAutoencoder(nn.Module):
+    def __init__(self, n_users):
+        super().__init__()
+        self.encoder = nn.Sequential(
+            nn.Linear(n_users, 64), nn.ReLU(),
+            nn.Linear(64, 16), nn.ReLU()
+        )
+        self.decoder = nn.Linear(16, n_users)
+
+    def forward(self, x):
+        h = self.encoder(x)
+        return self.decoder(h)
+
+item_autoencoder = ItemAutoencoder(n_users)
+criterion = nn.MSELoss()
+optimizer = optim.Adam(item_autoencoder.parameters())
+
+epochs, batch_size = 60, 32
+for epoch in range(epochs):
+    item_autoencoder.train()
+    indices = torch.randperm(item_input.size(0))
+    for start in range(0, item_input.size(0), batch_size):
+        batch_indices = indices[start:start + batch_size]
+        interaction_batch = item_input[batch_indices]
+        optimizer.zero_grad()
+        decoded_row = item_autoencoder(interaction_batch)
+        loss = criterion(decoded_row, interaction_batch)
+        loss.backward()
+        optimizer.step()
+
+item_autoencoder.eval()
+with torch.no_grad():
+    item_embeddings = item_autoencoder.encoder(item_input)
+print("Item embedding shape:", item_embeddings.shape)</code></pre>
+<div class="output-label">output</div>
+<div class="output-block">Item embedding shape: torch.Size([300, 16])</div>
+      </div></div>
+    </div>
+    <div class="acc-item">
+      <button class="acc-head"><span>Find similar items with cosine similarity<br><small>Top-5 nearest neighbors for one query item</small></span><span class="chevron">▸</span></button>
+      <div class="acc-body"><div class="acc-body-inner">
+<pre><code class="language-python">from sklearn.metrics.pairwise import cosine_similarity
+
+similarity_matrix = cosine_similarity(item_embeddings)
+similarity_df = pd.DataFrame(similarity_matrix)
+
+query_item = 42   # pretend a user is currently viewing photo #42
+top_matches = similarity_df[query_item].sort_values(ascending=False)[1:6]  # exclude itself
+
+print(f"Photos most similar to item {query_item}:")
+print(top_matches)</code></pre>
+<div class="output-label">output</div>
+<div class="output-block">Photos most similar to item 42:
+232    0.976905
+135    0.974719
+132    0.972556
+137    0.965555
+120    0.964041</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="quiz" data-quiz>
+    <div class="quiz-tag">CHECK YOUR UNDERSTANDING</div>
+    <div class="quiz-q">Why do we train the autoencoder on rows of the sparse interaction matrix rather than directly comparing raw interaction rows with cosine similarity?</div>
+    <div class="quiz-options">
+      <label class="quiz-opt"><input type="radio" name="q5"><span>Raw rows cannot be compared using cosine similarity because they contain mostly zero values</span></label>
+      <label class="quiz-opt" data-correct><input type="radio" name="q5"><span>The dense embedding compresses each item's interaction pattern into a smaller vector that captures structure and makes similarity comparisons more efficient</span></label>
+      <label class="quiz-opt"><input type="radio" name="q5"><span>Training an autoencoder removes the need for any similarity metric when comparing items with each other</span></label>
+      <label class="quiz-opt"><input type="radio" name="q5"><span>The autoencoder converts the original interaction ratings into binary labels before computing item similarities</span></label>
+    </div>
+    <button class="quiz-submit" data-submit>Check answer</button>
+    <div class="quiz-feedback" data-feedback>
+      <b data-verdict></b>
+      <span>You technically could compute cosine similarity directly on the raw sparse rows, but with mostly-zero entries and high dimensionality (one dimension per user), the result is noisy and expensive to compute at scale. The embedding step gives a compact, denoised summary of each item's interaction pattern, which is what makes similarity search fast and reliable in practice.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EVERYDAY AI ================= -->
+<section id="everyday-ai">
+  <div class="section-kicker">THE BIGGER PICTURE</div>
+  <h2>Where this idea shows up in the AI systems you already use</h2>
+  <p>Everything built in this lecture — mapping a piece of data into a dense vector that captures its meaning — is not unique to autoencoders. It's the same core idea behind the <span class="term">embedding models</span> that sit underneath most modern AI products.</p>
+  <div class="flow-list">
+    <div class="flow-list-item">
+      <div>
+        <h4>Search &amp; retrieval</h4>
+        <p>When a search engine or an AI assistant needs to find documents "similar in meaning" to your query, it typically encodes both the query and the documents into dense vectors using an embedding model, then compares them with a similarity metric — exactly the same cosine similarity used for Nightwatch's photos.</p>
+      </div>
+    </div>
+    <div class="flow-list-item">
+      <div>
+        <h4>Vector databases</h4>
+        <p>Store and search millions of these embeddings efficiently, built specifically to make this kind of similarity search fast at scale.</p>
+      </div>
+    </div>
+    <div class="flow-list-item">
+      <div>
+        <h4>Retrieval-Augmented Generation (RAG)</h4>
+        <p>A pattern many AI assistants use to answer questions about a specific set of documents: it embeds your question, retrieves the most similar stored embeddings, and feeds the retrieved text to a language model as context before it answers. The retrieval step is, structurally, the same nearest-neighbor-in-embedding-space idea from the recommender section.</p>
+      </div>
+    </div>
+    <div class="flow-list-item">
+      <div>
+        <h4>Multimodal AI</h4>
+        <p>Systems that compare an image and a piece of text (for example, "does this photo match this caption") rely on encoders trained so that semantically related items end up close together in the same embedding space — a direct generalization of the encoder half of what we built today.</p>
+      </div>
+    </div>
+  </div>
+  <p>The specific architectures have grown far larger and are trained on far more data than what we used in class, but the underlying move — an encoder that compresses meaningful structure into a dense vector — is the same move you now understand from first principles.</p>
+</section>
+
+<!-- ================= WRAP UP ================= -->
+<section id="wrapup">
+  <div class="section-kicker">SUMMARY</div>
+  <h2>Wrap-up</h2>
+  <ul class="wrap-list">
+    <li><span class="dot"></span><span>An autoencoder is an encoder and a decoder trained together to reconstruct their own input; the useful output is almost always the compressed bottleneck vector, not the reconstruction itself.</span></li>
+    <li><span class="dot"></span><span>The choice of reconstruction loss (MSE/RMSE, binary cross-entropy, categorical cross-entropy) depends on the type of data being reconstructed.</span></li>
+    <li><span class="dot"></span><span>Encoder and decoder architectures do not need to be symmetric or share weights — that was a historical convenience, not a requirement.</span></li>
+    <li><span class="dot"></span><span>Bottleneck embeddings can be reused as features for downstream models (feature extraction) or repurposed from a model trained on a different task altogether (transfer learning).</span></li>
+    <li><span class="dot"></span><span>Denoising autoencoders are trained on corrupted inputs with clean targets, which prevents the network from taking the identity-function shortcut and forces it to learn real structure.</span></li>
+    <li><span class="dot"></span><span>The same encoder idea, applied to a sparse user–item interaction matrix, produces item embeddings that power similarity-based recommendations.</span></li>
+    <li><span class="dot"></span><span>The same principle — compressing data into a meaning-preserving dense vector — underlies embedding models, vector databases, and retrieval-augmented generation in modern AI systems.</span></li>
+  </ul>
+</section>
+
+</article>
+
+<footer>
+  <div class="gold-rule"></div>
+  Neural Networks 10 post read
+</footer>
+</main>
+
+<script>
+hljs.highlightAll();
+
+/* ---------- progress bar + scrollspy ---------- */
+const sections = document.querySelectorAll('article section');
+const tocLinks = document.querySelectorAll('.toc a');
+const progressFill = document.getElementById('progressFill');
+
+function onScroll(){
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  progressFill.style.width = (docHeight>0 ? (scrollTop/docHeight)*100 : 0) + '%';
+
+  let current = sections[0] && sections[0].id;
+  sections.forEach(sec=>{
+    if (window.scrollY + 140 >= sec.offsetTop) current = sec.id;
+  });
+  tocLinks.forEach(a=>{
+    a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+  });
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+/* ---------- mobile nav toggle ---------- */
+const navToggle = document.getElementById('navToggle');
+const toc = document.getElementById('toc');
+navToggle.addEventListener('click', ()=>{
+  const open = toc.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', open);
+});
+tocLinks.forEach(a=>a.addEventListener('click', ()=>{ toc.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); }));
+
+/* ---------- accordions ---------- */
+document.querySelectorAll('.acc-item').forEach(item=>{
+  const head = item.querySelector('.acc-head');
+  const body = item.querySelector('.acc-body');
+  head.addEventListener('click', ()=>{
+    const isOpen = item.classList.contains('open');
+    if(isOpen){
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(()=>{ body.style.maxHeight = '0px'; });
+      item.classList.remove('open');
+    } else {
+      item.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.addEventListener('transitionend', function te(){
+        if(item.classList.contains('open')) body.style.maxHeight = 'none';
+        body.removeEventListener('transitionend', te);
+      });
+    }
+  });
+});
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('[data-tabs]').forEach(group=>{
+  const btns = group.querySelectorAll('.tab-btn');
+  const panels = group.querySelectorAll('.tab-panel');
+  btns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      btns.forEach(b=>b.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      group.querySelector(`[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+    });
+  });
+});
+
+/* ---------- quizzes ---------- */
+document.querySelectorAll('[data-quiz]').forEach(quiz=>{
+  const submit = quiz.querySelector('[data-submit]');
+  const feedback = quiz.querySelector('[data-feedback]');
+  const verdict = quiz.querySelector('[data-verdict]');
+  const opts = quiz.querySelectorAll('.quiz-opt');
+  let answered = false;
+
+  opts.forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      if(answered) return;
+    });
+  });
+
+  submit.addEventListener('click', ()=>{
+    const checked = quiz.querySelector('input[type=radio]:checked');
+    if(!checked || answered) return;
+    answered = true;
+    const chosen = checked.closest('.quiz-opt');
+    const wasCorrect = chosen.hasAttribute('data-correct');
+    opts.forEach(o=>{
+      if(o.hasAttribute('data-correct')) o.classList.add('correct');
+      else if(o === chosen) o.classList.add('incorrect');
+      o.querySelector('input').disabled = true;
+    });
+    feedback.classList.add('show', wasCorrect ? 'right' : 'wrong');
+    verdict.textContent = wasCorrect ? "That's right." : 'Not quite — here\'s why:';
+    submit.disabled = true;
+    submit.textContent = 'Answered';
+  });
+});
+
+/* ---------- bottleneck playground ---------- */
+(function(){
+  const oCanvas = document.getElementById('pgOriginal');
+  const rCanvas = document.getElementById('pgRecon');
+  const slider = document.getElementById('kSlider');
+  const kReadout = document.getElementById('kReadout');
+  const kLabel = document.getElementById('kLabel');
+  const octx = oCanvas.getContext('2d');
+  const rctx = rCanvas.getContext('2d');
+
+  // seeded pseudo-random so the "starfield" is stable across redraws
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+  }
+  const rand = mulberry32(99);
+  const stars = [];
+  for(let i=0;i<70;i++){
+    stars.push({x:rand()*180, y:rand()*180, r: rand()*1.6+0.4, b: rand()*0.5+0.5});
+  }
+
+  function drawField(ctx, detail){
+    ctx.clearRect(0,0,180,180);
+    const grad = ctx.createRadialGradient(90,70,10,90,90,140);
+    grad.addColorStop(0,'#1b2440');
+    grad.addColorStop(1,'#0a0d18');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,180,180);
+    const visible = Math.max(2, Math.round(stars.length * detail));
+    for(let i=0;i<visible;i++){
+      const s = stars[i];
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(230,200,120,${s.b})`;
+      ctx.arc(s.x, s.y, s.r + (1-detail)*0.4, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  function render(){
+    const k = parseInt(slider.value,10);
+    kReadout.textContent = k;
+    kLabel.textContent = k;
+    const detail = k/64;
+    drawField(octx, 1);
+    rctx.filter = `blur(${(1-detail)*5.5}px)`;
+    drawField(rctx, Math.max(detail,0.08));
+    rctx.filter = 'none';
+  }
+  slider.addEventListener('input', render);
+  render();
+})();
+
+/* ---------- denoising demo ---------- */
+(function(){
+  const cCanvas = document.getElementById('denoiseClean');
+  const nCanvas = document.getElementById('denoiseNoisy');
+  const cctx = cCanvas.getContext('2d');
+  const nctx = nCanvas.getContext('2d');
+  const btn = document.getElementById('noiseToggle');
+
+  const grid = 8, cell = 150/grid;
+  let pattern = [];
+  function makePattern(seed){
+    let a = seed;
+    function rnd(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a>>>15, 1|a); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }
+    const p = [];
+    for(let y=0;y<grid;y++){ const row=[]; for(let x=0;x<grid;x++){ row.push(rnd()>0.6 ? 1: 0); } p.push(row); }
+    return p;
+  }
+  pattern = makePattern(13);
+
+  function drawClean(){
+    cctx.clearRect(0,0,150,150);
+    cctx.fillStyle = '#10131c'; cctx.fillRect(0,0,150,150);
+    for(let y=0;y<grid;y++) for(let x=0;x<grid;x++){
+      if(pattern[y][x]){
+        cctx.fillStyle = '#E8C565';
+        cctx.fillRect(x*cell+1,y*cell+1,cell-2,cell-2);
+      }
+    }
+  }
+
+  function drawNoisy(){
+    nctx.clearRect(0,0,150,150);
+    nctx.fillStyle = '#10131c'; nctx.fillRect(0,0,150,150);
+    for(let y=0;y<grid;y++) for(let x=0;x<grid;x++){
+      const base = pattern[y][x] ? 0.85 : 0.08;
+      const noisy = Math.min(1, Math.max(0, base + (Math.random()-0.5)*0.9));
+      nctx.fillStyle = `rgba(232,197,101,${noisy})`;
+      nctx.fillRect(x*cell+1,y*cell+1,cell-2,cell-2);
+    }
+  }
+
+  drawClean();
+  drawNoisy();
+  btn.addEventListener('click', drawNoisy);
+})();
+</script>
+</body>
+</html>
